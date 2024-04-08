@@ -1,12 +1,14 @@
 import React, { useRef, useState } from 'react'
 import Header from './Header'
 import { checkValidData } from '../utils/validate.js'
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword  } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile  } from "firebase/auth";
 import { auth } from '../utils/firebase.js';
 import { useNavigate } from 'react-router-dom'
+import {useDispatch} from "react-redux"
+import {addUser,removeUser} from '../utils/userSlice.js'
 
 function Login() {
-
+  const dispatch = useDispatch()
   const navigate = useNavigate()
   // true is sign in and false is sign up
   const [isSignInFrom,setIsSignInFrom] = useState(true) 
@@ -31,8 +33,25 @@ function Login() {
     )
   .then((userCredential) => {
     const user = userCredential.user;
-    console.log(user);
-    navigate("/browse")
+    updateProfile(user, {
+      displayName: username.current.value,
+      photoURL: "https://avatars.githubusercontent.com/u/155902231?v=4"
+    }).then(() => {
+      const {uid,email,displayName,photoURL} = auth.currentUser;
+      dispatch(addUser({
+        uid: uid,
+        email: email,
+        displayName: displayName,photoURL: photoURL
+      })
+    )
+        navigate("/browes")
+        console.log(user);
+    }).catch((error) => {
+      setErrorMessage(error.message)
+    });
+    
+
+
   })
   .catch((error) => {
     const errorCode = error.code;
@@ -51,6 +70,7 @@ function Login() {
   .then((userCredential) => {
     const user = userCredential.user;
     console.log(user);
+    navigate("/browes")
   })
   .catch((error) => {
     const errorCode = error.code;
@@ -59,8 +79,6 @@ function Login() {
   });
 
     }
-
-
   }
 
   const toggleSignInfrom = () => {
