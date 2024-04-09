@@ -44,7 +44,6 @@ function Login() {
         displayName: displayName,photoURL: photoURL
       })
     )
-        navigate("/browes")
         console.log(user);
     }).catch((error) => {
       setErrorMessage(error.message)
@@ -70,7 +69,6 @@ function Login() {
   .then((userCredential) => {
     const user = userCredential.user;
     console.log(user);
-    navigate("/browes")
   })
   .catch((error) => {
     const errorCode = error.code;
